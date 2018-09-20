@@ -1,16 +1,17 @@
 {
-  "name": "wp-graphql/wp-graphql-acf",
-  "description": "Advanced Custom Fields bindings for wp-graphql",
+  "name": "angusdowling/wp-graphql-acf",
+  "description": "ACF addon for GraphQL API for WordPress",
   "type": "wordpress-plugin",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "authors": [
     {
       "name": "Toni Main",
       "email": "me@tonimain.com"
+    },
+    {
+      "name": "Angus Dowling"
     }
   ],
-  "require-dev": {
-  },
   "config": {
     "optimize-autoloader": true
   },

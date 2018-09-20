@@ -1,19 +1,21 @@
 <?php
 namespace WPGraphQL\Extensions\ACF\Type\Union;
 
-use GraphQL\Type\Definition\UnionType;
+use WPGraphQL\Type\WPUnionType;
+use WPGraphQL\Types;
 use WPGraphQL\Extensions\ACF\Types as ACFTypes;
+use WPGraphQL\Extensions\ACF\Utils as ACFUtils;
 
-class FieldUnionType extends UnionType {
+class FieldUnionType extends WPUnionType {
 
-	private static $possible_types;
+	private $possible_types;
 
 	public function __construct() {
 
 		$config = [
 			'name' => 'fieldUnion',
 			'types' => function() {
-				return self::getPossibleTypes();
+				return $this->getPossibleTypes();
 			},
 			'resolveType' => function( $field ) {
 				return ! empty( $field ) ? ACFTypes::field_type( $field ) : null;
@@ -25,21 +27,24 @@ class FieldUnionType extends UnionType {
 
 	public function getPossibleTypes() {
 
-		if ( null === self::$possible_types ) {
-			self::$possible_types = [];
+		if ( null === $this->possible_types ) {
+			$this->possible_types = [];
 		}
 
 		$acf_field_types = acf_get_field_types();
 
 		if ( ! empty( $acf_field_types ) && is_array( $acf_field_types ) ) {
 			foreach ( $acf_field_types as $type_key => $type ) {
-				if ( ! empty( $type['graphql_label'] ) && empty( self::$possible_types[ $type['graphql_label'] ] ) ) {
-					self::$possible_types[ $type['graphql_label'] ] = ACFTypes::field_type( $type );
+				$type = (array) $type;
+				$type['graphql_label'] = ACFUtils::_graphql_label( $type_key );
+
+				if ( ! empty( $type['graphql_label'] ) && empty( $this->possible_types[ $type['graphql_label'] ] ) ) {
+					$this->possible_types[ $type['graphql_label'] ] = ACFTypes::field_type( $type );
 				}
 			}
 		}
 
-		return ! empty( self::$possible_types ) ? self::$possible_types : null;
+		return ! empty( $this->possible_types ) ? $this->possible_types : null;
 
 	}
 

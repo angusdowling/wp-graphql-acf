@@ -1,27 +1,26 @@
 <?php
 
-namespace WPGraphQL\Extensions\ACF\Type\FieldGroup;
+namespace WPGraphQL\Extensions\ACF\Type\Link;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use WPGraphQL\AppContext;
 use WPGraphQL\Type\WPObjectType;
 use WPGraphQL\Types;
-use WPGraphQL\Extensions\ACF\Types as ACFTypes;
 
-class FieldGroupType extends WPObjectType {
+class LinkType extends WPObjectType {
 
 	private static $type_name;
 
 	private static $fields;
 
-	public function __construct()  {
+	public function __construct() {
 
-		self::$type_name = 'fieldGroup';
+		self::$type_name = 'fieldLink';
 
 		$config = [
 			'name'        => self::$type_name,
 			'fields'      => self::fields(),
-			'description' => __( 'ACF Group Field.', 'wp-graphql' ),
+			'description' => __( 'ACF Link Field.', 'wp-graphql' ),
 		];
 
 		parent::__construct( $config );
@@ -33,12 +32,15 @@ class FieldGroupType extends WPObjectType {
 		if ( null === self::$fields ) {
 			self::$fields = function() {
 				$fields = [
-          'acfFcLayout' => [
+          'title' => [
+            'type' => Types::string(),
+          ],
+					'url' => [
 						'type' => Types::string(),
 					],
-					'fields' => [
-						'type' => Types::list_of( ACFTypes::field_union_type() ),
-					],
+					'target' => [
+						'type' => Types::string(),
+					]
 				];
 
 				return self::prepare_fields( $fields, self::$type_name );

@@ -6,45 +6,42 @@ use WPGraphQL\Extensions\ACF\Types as ACFTypes;
 use WPGraphQL\Extensions\ACF\Utils as ACFUtils;
 
 class Actions {
-
-	/**
-	 * This adds the ACF fields to each type, based on ACF Field Group location rules.
-	 *
-	 * @return mixed
-	 */
-	public static function acf_add_fields_to_types() {
-
-		/**
+  /**
+   * Search for all ACF fields attached to an object type, then attach them to the GraphQL Schema.
+   */
+  public static function acf_add_fields_to_types() {
+    /**
 		 * Get the registered_field_groups
 		 */
 		$field_groups = acf_get_field_groups();
-
-		/**
+		
+		$acf_field_types = acf_get_field_types();
+    
+    /**
 		 * If there are registered $field_groups
 		 */
 		if ( ! empty( $field_groups ) && is_array( $field_groups ) ) {
 
-			/**
+      /**
 			 * Loop through the field_groups
 			 */
 			foreach ( $field_groups as $field_group ) {
-
-				/**
+        /**
 				 * Get the field group location rules
 				 */
-				$locations = $field_group['location'];
-
-				/**
+        $locations = $field_group['location'];
+        
+        /**
 				 * If the field group has location rules defined
 				 */
 				if ( ! empty( $locations ) && is_array( $locations ) ) {
 
-					/**
+          /**
 					 * Loop through the location rules
 					 */
 					foreach ( $locations as $location ) {
 
-						/**
+            /**
 						 * Setup the fields for each type, based on the param that's setting them up
 						 */
 						switch ( $location[0]['param'] ) {
@@ -58,15 +55,16 @@ class Actions {
 							default:
 								break;
 
-						} // End switch().
-					}// End foreach().
+            } // End switch().
+          }// End foreach().
 				}// End if().
 			}// End foreach().
-		}// End if().
-		return;
-	}
+    }// End if().
+    
+    return;
+  }
 
-	/**
+  /**
 	 *
 	 * @param $location
 	 * @param $field_group
@@ -112,10 +110,9 @@ class Actions {
 
 			}
 		}
-
-	}
-
-	public static function filter_object_fields( $fields, $field_group ) {
+  }
+  
+  public static function filter_object_fields( $fields, $field_group ) {
 
 		/**
 		 * Get the fields for the specified field_group
@@ -152,7 +149,6 @@ class Actions {
 						// Translators: The placeholder is the type of object (post_type, taxonomy, etc) being filtered
 						'description' => sprintf( __( 'The %1$s field', 'wp-graphql-acf' ), $acf_field['label'] ),
 						'resolve'     => function( $resolving_object ) use ( $acf_field, $type ) {
-
 							$object_id = '';
 							if ( $resolving_object instanceof \WP_Post ) {
 								$object_id = $resolving_object->ID;
@@ -171,5 +167,4 @@ class Actions {
 		return $fields;
 
 	}
-
 }
