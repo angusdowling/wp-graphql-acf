@@ -52,6 +52,9 @@ class Actions {
 							case 'taxonomy':
 								self::term_object_fields( $location, $field_group );
 								break;
+							case 'options_page':
+								self::option_object_fields( $location, $field_group );
+								break;
 							default:
 								break;
 
@@ -110,7 +113,32 @@ class Actions {
 
 			}
 		}
-  }
+	}
+	
+	private static function option_object_fields( $location, $field_group ) {
+		
+		$fields = get_posts(array(
+			'posts_per_page'   => -1,
+			'post_type'        => 'acf-field',
+			'orderby'          => 'menu_order',
+			'order'            => 'ASC',
+			'suppress_filters' => true,
+			'post_parent'      => $field_group['ID'],
+			'post_status'      => 'any',
+			'update_post_meta_cache' => false
+		));
+
+		if ( !empty( $fields ) ) {
+			foreach ( $fields as $field ) {
+				register_setting('acf', 'options_' . $field->post_excerpt, array(
+					'show_in_rest' => array(
+						'name' => ACFUtils::_graphql_label( $field->post_excerpt )
+					)
+				));
+			}
+		}
+
+	}
   
   public static function filter_object_fields( $fields, $field_group ) {
 
